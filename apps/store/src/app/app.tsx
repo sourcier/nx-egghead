@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { formatRating } from '@nx-egghead/store/util-formatters';
 
-import { Route, useHistory } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 
 import { StoreFeatureGameDetail } from '@nx-egghead/store/feature-game-detail';
 import { Game } from '@nx-egghead/api/util-interfaces';
@@ -28,24 +28,24 @@ export const App = () => {
   });
 
   useEffect(() => {
-    setState({
+    setState((state) => ({
       ...state,
       loadingState: 'loading',
-    });
+    }));
     fetch('/api/games')
       .then((x) => x.json())
       .then((res) => {
-        setState({
+        setState((state) => ({
           ...state,
           data: res,
           loadingState: 'success',
-        });
+        }));
       })
       .catch((err) => {
-        setState({
+        setState((state) => ({
           ...state,
           loadingState: 'error',
-        });
+        }));
       });
   }, []);
 
@@ -96,7 +96,9 @@ export const App = () => {
         </div>
       </div>
 
-      <Route path="/game/:id" component={StoreFeatureGameDetail} />
+      <Switch>
+        <Route path="/game/:id" children={<StoreFeatureGameDetail />} />
+      </Switch>
     </>
   );
 };

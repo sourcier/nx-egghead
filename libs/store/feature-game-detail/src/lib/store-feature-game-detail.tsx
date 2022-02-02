@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import './store-feature-game-detail.scss';
 
 import Card from '@material-ui/core/Card';
@@ -10,13 +10,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import { formatRating } from '@nx-egghead/store/util-formatters';
 import { Game } from '@nx-egghead/api/util-interfaces';
 
-type TParams = { id: string };
-
-/* eslint-disable-next-line */
-export interface StoreFeatureGameDetailProps
-  extends RouteComponentProps<TParams> {}
-
-export const StoreFeatureGameDetail = (props: StoreFeatureGameDetailProps) => {
+export const StoreFeatureGameDetail = () => {
   const [state, setState] = useState<{
     data: Game | null;
     loadingState: 'success' | 'error' | 'loading';
@@ -24,29 +18,29 @@ export const StoreFeatureGameDetail = (props: StoreFeatureGameDetailProps) => {
     data: null,
     loadingState: 'success',
   });
+  const { id: gameId } = useParams();
 
   useEffect(() => {
-    setState({
+    setState((state) => ({
       ...state,
       loadingState: 'loading',
-    });
-    const gameId = props.match.params.id;
+    }));
     fetch(`/api/games/${gameId}`)
       .then((x) => x.json())
       .then((res) => {
-        setState({
+        setState((state) => ({
           ...state,
           data: res,
           loadingState: 'success',
-        });
+        }));
       })
       .catch((err) => {
-        setState({
+        setState((state) => ({
           ...state,
           loadingState: 'error',
-        });
+        }));
       });
-  }, [props.match.params.id]);
+  }, [gameId]);
 
   return (
     <div className="container">
