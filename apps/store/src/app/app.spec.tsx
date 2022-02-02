@@ -1,27 +1,41 @@
-import { render } from '@testing-library/react';
+import { findByTestId, findByText, render } from '@testing-library/react';
 
 import { BrowserRouter } from 'react-router-dom';
 
 import App from './app';
 
-describe('App', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
+function mockFetch(data) {
+  return jest.fn().mockImplementation(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => data,
+    })
+  );
+}
 
-    expect(baseElement).toBeTruthy();
+describe('App', () => {
+  beforeEach(() => {
+    window.fetch = mockFetch([]);
   });
 
-  it('should have a greeting as the title', () => {
-    const { getByText } = render(
+  it('should render successfully', async () => {
+    const { container } = render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
     );
 
-    expect(getByText(/Welcome store/gi)).toBeTruthy();
+    const element = await findByTestId(container, 'app-container');
+    expect(element).toBeTruthy();
+  });
+
+  it('should have a greeting as the title', async () => {
+    const { container } = render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
+
+    expect(await findByText(container, 'Board Game Hoard')).toBeTruthy();
   });
 });
